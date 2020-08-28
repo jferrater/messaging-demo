@@ -13,15 +13,19 @@ public class TextMessageEntity {
     private String id;
     private String sender;
     private String receiver;
-    private String body;
+    private String message;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date dateSent;
 
-    public TextMessageEntity(String id, String sender, String receiver, String body, Date dateSent) {
+    public TextMessageEntity() {
+        // Empty constructor
+    }
+
+    public TextMessageEntity(String id, String sender, String receiver, String message, Date dateSent) {
         this.id = id;
         this.sender = sender;
         this.receiver = receiver;
-        this.body = body;
+        this.message = message;
         this.dateSent = dateSent;
     }
 
@@ -49,12 +53,12 @@ public class TextMessageEntity {
         this.receiver = receiver;
     }
 
-    public String getBody() {
-        return body;
+    public String getMessage() {
+        return message;
     }
 
-    public void setBody(String body) {
-        this.body = body;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public Date getDateSent() {
