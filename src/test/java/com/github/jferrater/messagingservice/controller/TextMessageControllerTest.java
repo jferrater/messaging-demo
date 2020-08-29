@@ -16,11 +16,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,6 +57,21 @@ class TextMessageControllerTest {
                 .andExpect(jsonPath("$.receiver", is(RECEIVER)))
                 .andExpect(jsonPath("$.message", is(MESSAGE_BODY)))
                 .andExpect(jsonPath("$.dateSent", is(notNullValue())));
+    }
+
+    @Test
+    void shouldGetReceivedMessages() throws Exception {
+        TextMessageResponse textMessageResponse = new TextMessageResponse(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
+        when(textMessageService.getReceivedMessages(RECEIVER)).thenReturn(List.of(textMessageResponse));
+
+        mockMvc.perform(get("/messages/"+RECEIVER+"/received")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", is(MESSAGE_ID)))
+                .andExpect(jsonPath("$[0].sender", is(SENDER)))
+                .andExpect(jsonPath("$[0].receiver", is(RECEIVER)))
+                .andExpect(jsonPath("$[0].message", is(MESSAGE_BODY)))
+                .andExpect(jsonPath("$[0].dateSent", is(notNullValue())));
     }
 
     private static String requestBody() throws JsonProcessingException {

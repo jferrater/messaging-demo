@@ -28,7 +28,7 @@ public class TextMessageService {
         return toTextMessageResponse(textMessageRepository.insert(textMessageEntity));
     }
 
-    public List<TextMessageResponse> getNewMessages(String receiver) {
+    public List<TextMessageResponse> getReceivedMessages(String receiver) {
         List<TextMessageEntity> messagesByReceiver = textMessageRepository.findMessagesByReceiver(receiver);
         return messagesByReceiver.stream().map(this::toTextMessageResponse).collect(toList());
     }

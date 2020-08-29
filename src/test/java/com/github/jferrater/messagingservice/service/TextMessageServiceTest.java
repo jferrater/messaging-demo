@@ -51,12 +51,12 @@ class TextMessageServiceTest {
     }
 
     @Test
-    void shouldUpdateMessageStatusWhenARecipientFetchTheMessage() {
+    void shouldGetReceivedMessages() {
         TextMessageEntity textMessageEntity = new TextMessageEntity(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
         textMessageEntity.setMessageStatus(TextMessageEntity.MessageStatus.NEW);
         when(textMessageRepository.findMessagesByReceiver(anyString())).thenReturn(List.of(textMessageEntity));
 
-        List<TextMessageResponse> result = target.getNewMessages(RECEIVER);
+        List<TextMessageResponse> result = target.getReceivedMessages(RECEIVER);
 
         assertThat(result.size(), is(1));
     }
