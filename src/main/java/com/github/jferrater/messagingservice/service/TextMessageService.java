@@ -1,5 +1,6 @@
 package com.github.jferrater.messagingservice.service;
 
+import com.github.jferrater.messagingservice.model.MessageIds;
 import com.github.jferrater.messagingservice.model.TextMessage;
 import com.github.jferrater.messagingservice.model.TextMessageResponse;
 import com.github.jferrater.messagingservice.repository.TextMessageRepository;
@@ -32,7 +33,6 @@ public class TextMessageService {
         return messagesByReceiver.stream().map(this::toTextMessageResponse).collect(toList());
     }
 
-
     public List<TextMessageResponse> getSentMessages(String sender) {
         List<TextMessageEntity> messagesByReceiver = textMessageRepository.findMessagesBySender(sender);
         return messagesByReceiver.stream().map(this::toTextMessageResponse).collect(toList());
@@ -42,6 +42,16 @@ public class TextMessageService {
         TextMessageEntity textMessageEntity = toTextMessageEntity(textMessageResponse);
         TextMessageEntity updated = textMessageRepository.save(textMessageEntity);
         return toTextMessageResponse(updated);
+    }
+
+    public void deleteMessages(MessageIds messageIds) {
+        for(String id : messageIds.getIds()) {
+            textMessageRepository.deleteById(id);
+        }
+    }
+
+    public void deleteMessageById(String id) {
+        textMessageRepository.deleteById(id);
     }
 
     private TextMessageResponse toTextMessageResponse(TextMessageEntity textMessageEntity) {

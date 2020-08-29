@@ -1,5 +1,6 @@
 package com.github.jferrater.messagingservice.controller;
 
+import com.github.jferrater.messagingservice.model.MessageIds;
 import com.github.jferrater.messagingservice.model.MessageStatus;
 import com.github.jferrater.messagingservice.model.TextMessage;
 import com.github.jferrater.messagingservice.model.TextMessageResponse;
@@ -24,7 +25,7 @@ public class TextMessageController {
         this.textMessageService = textMessageService;
     }
 
-    @PostMapping(value = "/messages", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/messages", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TextMessageResponse> sendTextMessage(@RequestBody TextMessage textMessage) {
         TextMessageResponse textMessageResponse = textMessageService.createMessage(textMessage);
         return new ResponseEntity<>(textMessageResponse, HttpStatus.CREATED);
@@ -54,5 +55,17 @@ public class TextMessageController {
     public ResponseEntity<List<TextMessageResponse>> getSentMessages(@PathVariable("username") String username) {
         List<TextMessageResponse> sentMessages = textMessageService.getSentMessages(username);
         return new ResponseEntity<>(sentMessages, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/messages", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> deleteUser(@RequestBody MessageIds messageIds) {
+        textMessageService.deleteMessages(messageIds);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/messages/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") String id) {
+        textMessageService.deleteMessageById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

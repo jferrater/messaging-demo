@@ -1,5 +1,6 @@
 package com.github.jferrater.messagingservice.service;
 
+import com.github.jferrater.messagingservice.model.MessageIds;
 import com.github.jferrater.messagingservice.model.MessageStatus;
 import com.github.jferrater.messagingservice.model.TextMessage;
 import com.github.jferrater.messagingservice.model.TextMessageResponse;
@@ -16,8 +17,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class TextMessageServiceTest {
 
@@ -92,4 +92,23 @@ class TextMessageServiceTest {
         assertThat(result.size(), is(1));
     }
 
+    @Test
+    void shouldDeleteMessage() {
+        doNothing().when(textMessageRepository).deleteById(isA(String.class));
+        MessageIds messageIds = new MessageIds();
+        messageIds.setIds(List.of(MESSAGE_ID));
+
+        target.deleteMessages(messageIds);
+
+        verify(textMessageRepository, times(1)).deleteById(MESSAGE_ID);
+    }
+
+    @Test
+    void shouldDeleteAMessage() {
+        doNothing().when(textMessageRepository).deleteById(isA(String.class));
+
+        target.deleteMessageById(MESSAGE_ID);
+
+        verify(textMessageRepository, times(1)).deleteById(MESSAGE_ID);
+    }
 }

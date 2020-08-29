@@ -2,6 +2,7 @@ package com.github.jferrater.messagingservice.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.jferrater.messagingservice.model.MessageIds;
 import com.github.jferrater.messagingservice.model.MessageStatus;
 import com.github.jferrater.messagingservice.model.TextMessage;
 import com.github.jferrater.messagingservice.model.TextMessageResponse;
@@ -23,9 +24,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -102,6 +104,29 @@ class TextMessageControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
+    }
+
+    @Test
+    void shouldDeleteMessages() throws Exception {
+        doNothing().when(textMessageService).deleteMessages(isA(MessageIds.class));
+
+        List<String> ids = List.of(MESSAGE_ID);
+        MessageIds messageIds = new MessageIds();
+        messageIds.setIds(ids);
+        String requestBody = new ObjectMapper().writeValueAsString(messageIds);
+
+        mockMvc.perform(delete("/messages")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldDeleteMessageById() throws Exception {
+        doNothing().when(textMessageService).deleteMessageById(isA(String.class));
+
+        mockMvc.perform(delete("/messages/"+MESSAGE_ID))
+                .andExpect(status().isOk());
     }
 
     private static String requestBody() throws JsonProcessingException {

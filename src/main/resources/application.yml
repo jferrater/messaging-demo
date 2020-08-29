@@ -2,7 +2,7 @@ server:
   port: 8027
   servlet:
     context-path: /messaging-service/
-    
+
 spring:
   data:
     mongodb:
