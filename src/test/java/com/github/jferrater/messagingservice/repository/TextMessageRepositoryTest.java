@@ -1,5 +1,6 @@
 package com.github.jferrater.messagingservice.repository;
 
+import com.github.jferrater.messagingservice.model.MessageStatus;
 import com.github.jferrater.messagingservice.repository.document.TextMessageEntity;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +32,7 @@ class TextMessageRepositoryTest {
     @BeforeEach
     void setUp() {
         TextMessageEntity textMessageEntity = new TextMessageEntity(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
-        textMessageEntity.setMessageStatus(TextMessageEntity.MessageStatus.NEW);
+        textMessageEntity.setMessageStatus(MessageStatus.NEW);
         target.save(textMessageEntity);
     }
 
@@ -50,7 +51,7 @@ class TextMessageRepositoryTest {
         assertThat(result.getSender(), is(SENDER));
         assertThat(result.getReceiver(), is(RECEIVER));
         assertThat(result.getMessage(), is(MESSAGE_BODY));
-        assertThat(result.getMessageStatus(), is(TextMessageEntity.MessageStatus.NEW));
+        assertThat(result.getMessageStatus(), is(MessageStatus.NEW));
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.github.jferrater.messagingservice.repository.document;
 
+import com.github.jferrater.messagingservice.model.MessageStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -79,10 +80,5 @@ public class TextMessageEntity {
 
     public void setDateSent(Date dateSent) {
         this.dateSent = dateSent;
-    }
-
-    public enum MessageStatus {
-        NEW,
-        FETCHED
     }
 }

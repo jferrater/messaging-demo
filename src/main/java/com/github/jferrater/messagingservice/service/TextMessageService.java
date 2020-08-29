@@ -33,6 +33,12 @@ public class TextMessageService {
         return messagesByReceiver.stream().map(this::toTextMessageResponse).collect(toList());
     }
 
+    public TextMessageResponse updateMessage(TextMessageResponse textMessageResponse) {
+        TextMessageEntity textMessageEntity = toTextMessageEntity(textMessageResponse);
+        TextMessageEntity updated = textMessageRepository.save(textMessageEntity);
+        return toTextMessageResponse(updated);
+    }
+
     private TextMessageResponse toTextMessageResponse(TextMessageEntity textMessageEntity) {
         return modelMapper.map(textMessageEntity, TextMessageResponse.class);
     }
@@ -40,6 +46,10 @@ public class TextMessageService {
     private TextMessageEntity toTextMessageEntity(TextMessage textMessage) {
         String messageId = UUID.randomUUID().toString();
         TextMessageResponse textMessageResponse = new TextMessageResponse(messageId, textMessage.getSender(), textMessage.getReceiver(), textMessage.getMessage(), new Date());
+        return modelMapper.map(textMessageResponse, TextMessageEntity.class);
+    }
+
+    private TextMessageEntity toTextMessageEntity(TextMessageResponse textMessageResponse) {
         return modelMapper.map(textMessageResponse, TextMessageEntity.class);
     }
 }

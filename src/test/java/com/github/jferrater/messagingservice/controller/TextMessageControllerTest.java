@@ -2,6 +2,7 @@ package com.github.jferrater.messagingservice.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.jferrater.messagingservice.model.MessageStatus;
 import com.github.jferrater.messagingservice.model.TextMessage;
 import com.github.jferrater.messagingservice.model.TextMessageResponse;
 import com.github.jferrater.messagingservice.service.TextMessageService;
@@ -20,6 +21,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -72,6 +74,20 @@ class TextMessageControllerTest {
                 .andExpect(jsonPath("$[0].receiver", is(RECEIVER)))
                 .andExpect(jsonPath("$[0].message", is(MESSAGE_BODY)))
                 .andExpect(jsonPath("$[0].dateSent", is(notNullValue())));
+    }
+
+    @Test
+    void shouldOnlyGetNewMessages() throws Exception {
+        TextMessageResponse textMessageResponse1 = new TextMessageResponse(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
+        textMessageResponse1.setMessageStatus(MessageStatus.NEW);
+        TextMessageResponse textMessageResponse2 = new TextMessageResponse(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
+        textMessageResponse2.setMessageStatus(MessageStatus.FETCHED);
+        when(textMessageService.getReceivedMessages(RECEIVER)).thenReturn(List.of(textMessageResponse1, textMessageResponse2));
+
+        mockMvc.perform(get("/messages/"+RECEIVER+"/received?only_new_messages=true")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
     }
 
     private static String requestBody() throws JsonProcessingException {

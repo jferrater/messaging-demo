@@ -6,6 +6,7 @@ public class TextMessageResponse extends TextMessage{
 
     private String id;
     private Date dateSent;
+    private MessageStatus messageStatus;
 
     public TextMessageResponse() {
         super(null, null, null);
@@ -15,6 +16,14 @@ public class TextMessageResponse extends TextMessage{
         super(sender, receiver, message);
         this.id = id;
         this.dateSent = dateSent;
+    }
+
+    public MessageStatus getMessageStatus() {
+        return messageStatus;
+    }
+
+    public void setMessageStatus(MessageStatus messageStatus) {
+        this.messageStatus = messageStatus;
     }
 
     public String getId() {

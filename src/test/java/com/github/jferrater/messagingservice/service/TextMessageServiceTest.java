@@ -1,5 +1,6 @@
 package com.github.jferrater.messagingservice.service;
 
+import com.github.jferrater.messagingservice.model.MessageStatus;
 import com.github.jferrater.messagingservice.model.TextMessage;
 import com.github.jferrater.messagingservice.model.TextMessageResponse;
 import com.github.jferrater.messagingservice.repository.TextMessageRepository;
@@ -53,11 +54,30 @@ class TextMessageServiceTest {
     @Test
     void shouldGetReceivedMessages() {
         TextMessageEntity textMessageEntity = new TextMessageEntity(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
-        textMessageEntity.setMessageStatus(TextMessageEntity.MessageStatus.NEW);
+        textMessageEntity.setMessageStatus(MessageStatus.NEW);
         when(textMessageRepository.findMessagesByReceiver(anyString())).thenReturn(List.of(textMessageEntity));
 
         List<TextMessageResponse> result = target.getReceivedMessages(RECEIVER);
 
         assertThat(result.size(), is(1));
+    }
+
+    @Test
+    void shouldUpdateMessage() {
+        TextMessageEntity textMessageEntity = new TextMessageEntity(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
+        textMessageEntity.setMessageStatus(MessageStatus.FETCHED);
+        when(textMessageRepository.save(any(TextMessageEntity.class))).thenReturn(textMessageEntity);
+        TextMessageResponse textMessageResponse = new TextMessageResponse(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
+        textMessageResponse.setMessageStatus(MessageStatus.NEW);
+
+        TextMessageResponse result = target.updateMessage(textMessageResponse);
+
+        assertThat(result, is(notNullValue()));
+        assertThat(result.getId(), is(MESSAGE_ID));
+        assertThat(result.getSender(), is(SENDER));
+        assertThat(result.getReceiver(), is(RECEIVER));
+        assertThat(result.getMessage(), is(MESSAGE_BODY));
+        assertThat(result.getMessageStatus(), is(MessageStatus.FETCHED));
+        assertThat(result.getDateSent(), is(notNullValue()));
     }
 }
