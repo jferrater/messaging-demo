@@ -10,4 +10,6 @@ import java.util.List;
 public interface TextMessageRepository extends MongoRepository<TextMessageEntity, String> {
 
     List<TextMessageEntity> findMessagesByReceiver(String receiver);
+
+    List<TextMessageEntity> findMessagesBySender(String sender);
 }

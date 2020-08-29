@@ -49,4 +49,10 @@ public class TextMessageController {
             return new ResponseEntity<>(messages, HttpStatus.OK);
         }
     }
+
+    @GetMapping(value = "/messages/{username}/sent", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<TextMessageResponse>> getSentMessages(@PathVariable("username") String username) {
+        List<TextMessageResponse> sentMessages = textMessageService.getSentMessages(username);
+        return new ResponseEntity<>(sentMessages, HttpStatus.OK);
+    }
 }

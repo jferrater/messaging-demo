@@ -80,4 +80,16 @@ class TextMessageServiceTest {
         assertThat(result.getMessageStatus(), is(MessageStatus.FETCHED));
         assertThat(result.getDateSent(), is(notNullValue()));
     }
+
+    @Test
+    void shouldGetSentMessages() {
+        TextMessageEntity textMessageEntity = new TextMessageEntity(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
+        textMessageEntity.setMessageStatus(MessageStatus.NEW);
+        when(textMessageRepository.findMessagesBySender(anyString())).thenReturn(List.of(textMessageEntity));
+
+        List<TextMessageResponse> result = target.getSentMessages(SENDER);
+
+        assertThat(result.size(), is(1));
+    }
+
 }

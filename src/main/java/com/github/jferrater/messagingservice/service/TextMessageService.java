@@ -8,7 +8,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -33,6 +32,12 @@ public class TextMessageService {
         return messagesByReceiver.stream().map(this::toTextMessageResponse).collect(toList());
     }
 
+
+    public List<TextMessageResponse> getSentMessages(String sender) {
+        List<TextMessageEntity> messagesByReceiver = textMessageRepository.findMessagesBySender(sender);
+        return messagesByReceiver.stream().map(this::toTextMessageResponse).collect(toList());
+    }
+
     public TextMessageResponse updateMessage(TextMessageResponse textMessageResponse) {
         TextMessageEntity textMessageEntity = toTextMessageEntity(textMessageResponse);
         TextMessageEntity updated = textMessageRepository.save(textMessageEntity);
@@ -52,4 +57,5 @@ public class TextMessageService {
     private TextMessageEntity toTextMessageEntity(TextMessageResponse textMessageResponse) {
         return modelMapper.map(textMessageResponse, TextMessageEntity.class);
     }
+
 }

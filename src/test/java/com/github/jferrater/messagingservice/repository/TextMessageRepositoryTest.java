@@ -60,4 +60,11 @@ class TextMessageRepositoryTest {
 
         assertThat(result.size(), is(1));
     }
+
+    @Test
+    void shouldGetSentMessages() {
+        List<TextMessageEntity> result = target.findMessagesBySender(SENDER);
+
+        assertThat(result.size(), is(1));
+    }
 }

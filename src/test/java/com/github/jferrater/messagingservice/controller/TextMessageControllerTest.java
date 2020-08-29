@@ -90,6 +90,20 @@ class TextMessageControllerTest {
                 .andExpect(jsonPath("$", hasSize(1)));
     }
 
+    @Test
+    void shouldOnlyGetSentMessages() throws Exception {
+        TextMessageResponse textMessageResponse1 = new TextMessageResponse(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
+        textMessageResponse1.setMessageStatus(MessageStatus.NEW);
+        TextMessageResponse textMessageResponse2 = new TextMessageResponse(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
+        textMessageResponse2.setMessageStatus(MessageStatus.FETCHED);
+        when(textMessageService.getSentMessages(SENDER)).thenReturn(List.of(textMessageResponse1, textMessageResponse2));
+
+        mockMvc.perform(get("/messages/"+SENDER+"/sent")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)));
+    }
+
     private static String requestBody() throws JsonProcessingException {
         TextMessage textMessage = new TextMessage(SENDER, RECEIVER, MESSAGE_BODY);
         return new ObjectMapper().writeValueAsString(textMessage);
