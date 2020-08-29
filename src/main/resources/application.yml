@@ -1,1 +1,10 @@
-
+server:
+  port: 8027
+  servlet:
+    context-path: /messaging-service/
+    
+spring:
+  data:
+    mongodb:
+      database: messaging_service
+      uri: "mongodb://mongo:mongo@localhost:27017/messaging_service"
