@@ -1,7 +1,5 @@
 package com.github.jferrater.messagingservice.model;
 
-import java.util.Date;
-
 public class TextMessage {
 
     private String sender;

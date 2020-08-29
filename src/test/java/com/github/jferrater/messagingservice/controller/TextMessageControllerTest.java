@@ -3,8 +3,7 @@ package com.github.jferrater.messagingservice.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jferrater.messagingservice.model.TextMessage;
-import com.github.jferrater.messagingservice.repository.TextMessageRepository;
-import com.github.jferrater.messagingservice.repository.document.TextMessageEntity;
+import com.github.jferrater.messagingservice.model.TextMessageResponse;
 import com.github.jferrater.messagingservice.service.TextMessageService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +20,6 @@ import java.util.Date;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -44,8 +42,8 @@ class TextMessageControllerTest {
 
     @Test
     void shouldSendAMessage() throws Exception {
-        TextMessageEntity textMessageEntity = new TextMessageEntity(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
-        when(textMessageService.createMessage(any(TextMessageEntity.class))).thenReturn(textMessageEntity);
+        TextMessageResponse textMessageResponse = new TextMessageResponse(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
+        when(textMessageService.createMessage(any(TextMessage.class))).thenReturn(textMessageResponse);
 
         String requestBody = requestBody();
         mockMvc.perform(post("/messages")

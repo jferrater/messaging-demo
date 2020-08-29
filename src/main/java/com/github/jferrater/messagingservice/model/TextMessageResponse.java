@@ -2,16 +2,16 @@ package com.github.jferrater.messagingservice.model;
 
 import java.util.Date;
 
-public class TextMessageCreate extends TextMessage{
+public class TextMessageResponse extends TextMessage{
 
     private String id;
     private Date dateSent;
 
-    public TextMessageCreate() {
+    public TextMessageResponse() {
         super(null, null, null);
     }
 
-    public TextMessageCreate(String id, String sender, String receiver, String message, Date dateSent) {
+    public TextMessageResponse(String id, String sender, String receiver, String message, Date dateSent) {
         super(sender, receiver, message);
         this.id = id;
         this.dateSent = dateSent;

@@ -1,6 +1,7 @@
 package com.github.jferrater.messagingservice.repository.document;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -11,11 +12,14 @@ public class TextMessageEntity {
 
     @Id
     private String id;
+    @Indexed
     private String sender;
+    @Indexed
     private String receiver;
     private String message;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date dateSent;
+    private MessageStatus messageStatus;
 
     public TextMessageEntity() {
         // Empty constructor
@@ -27,6 +31,14 @@ public class TextMessageEntity {
         this.receiver = receiver;
         this.message = message;
         this.dateSent = dateSent;
+    }
+
+    public MessageStatus getMessageStatus() {
+        return messageStatus;
+    }
+
+    public void setMessageStatus(MessageStatus messageStatus) {
+        this.messageStatus = messageStatus;
     }
 
     public String getId() {
@@ -67,5 +79,10 @@ public class TextMessageEntity {
 
     public void setDateSent(Date dateSent) {
         this.dateSent = dateSent;
+    }
+
+    public enum MessageStatus {
+        NEW,
+        FETCHED
     }
 }

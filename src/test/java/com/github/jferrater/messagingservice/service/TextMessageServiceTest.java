@@ -1,16 +1,20 @@
 package com.github.jferrater.messagingservice.service;
 
+import com.github.jferrater.messagingservice.model.TextMessage;
+import com.github.jferrater.messagingservice.model.TextMessageResponse;
 import com.github.jferrater.messagingservice.repository.TextMessageRepository;
 import com.github.jferrater.messagingservice.repository.document.TextMessageEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -27,15 +31,16 @@ class TextMessageServiceTest {
     @BeforeEach
     void setUp() {
         textMessageRepository = mock(TextMessageRepository.class);
-        target = new TextMessageService(textMessageRepository);
+        target = new TextMessageService(textMessageRepository, new ModelMapper());
     }
 
     @Test
     void shouldCreateAMessage() {
         TextMessageEntity textMessageEntity = new TextMessageEntity(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
-        when(textMessageRepository.insert(eq(textMessageEntity))).thenReturn(textMessageEntity);
+        when(textMessageRepository.insert(any(TextMessageEntity.class))).thenReturn(textMessageEntity);
+        TextMessage textMessage = new TextMessage(SENDER,RECEIVER, MESSAGE_BODY);
 
-        TextMessageEntity result = target.createMessage(textMessageEntity);
+        TextMessageResponse result = target.createMessage(textMessage);
 
         assertThat(result, is(notNullValue()));
         assertThat(result.getId(), is(MESSAGE_ID));
@@ -43,5 +48,16 @@ class TextMessageServiceTest {
         assertThat(result.getReceiver(), is(RECEIVER));
         assertThat(result.getMessage(), is(MESSAGE_BODY));
         assertThat(result.getDateSent(), is(notNullValue()));
+    }
+
+    @Test
+    void shouldUpdateMessageStatusWhenARecipientFetchTheMessage() {
+        TextMessageEntity textMessageEntity = new TextMessageEntity(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
+        textMessageEntity.setMessageStatus(TextMessageEntity.MessageStatus.NEW);
+        when(textMessageRepository.findMessagesByReceiver(anyString())).thenReturn(List.of(textMessageEntity));
+
+        List<TextMessageResponse> result = target.getNewMessages(RECEIVER);
+
+        assertThat(result.size(), is(1));
     }
 }
