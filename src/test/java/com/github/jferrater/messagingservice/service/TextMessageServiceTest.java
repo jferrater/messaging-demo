@@ -1,5 +1,6 @@
 package com.github.jferrater.messagingservice.service;
 
+import com.github.jferrater.messagingservice.exceptions.MessageNotFoundException;
 import com.github.jferrater.messagingservice.model.MessageIds;
 import com.github.jferrater.messagingservice.model.MessageStatus;
 import com.github.jferrater.messagingservice.model.TextMessage;
@@ -12,10 +13,12 @@ import org.modelmapper.ModelMapper;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -106,12 +109,22 @@ class TextMessageServiceTest {
     @Test
     void shouldDeleteMessage() {
         doNothing().when(textMessageRepository).deleteById(isA(String.class));
+        when(textMessageRepository.findById(MESSAGE_ID)).thenReturn(Optional.of(new TextMessageEntity()));
         MessageIds messageIds = new MessageIds();
         messageIds.setIds(List.of(MESSAGE_ID));
 
         target.deleteMessages(messageIds);
 
         verify(textMessageRepository, times(1)).deleteById(MESSAGE_ID);
+    }
+
+    @Test
+    void shouldThrowMessageNotFoundException() {
+        when(textMessageRepository.findById(MESSAGE_ID)).thenReturn(Optional.empty());
+        MessageIds messageIds = new MessageIds();
+        messageIds.setIds(List.of(MESSAGE_ID));
+
+        assertThrows(MessageNotFoundException.class, () -> target.deleteMessages(messageIds));
     }
 
     @Test

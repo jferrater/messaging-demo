@@ -1,5 +1,6 @@
 package com.github.jferrater.messagingservice.controller;
 
+import com.github.jferrater.messagingservice.exceptions.MessageNotFoundException;
 import com.github.jferrater.messagingservice.model.ApiError;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,12 @@ public class DbExceptionHandler {
     public ResponseEntity<ApiError> handleException(Exception e) {
         ApiError apiError = new ApiError(500, "Internal Server Error", e.getMessage());
         return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(MessageNotFoundException.class)
+    public ResponseEntity<ApiError> handleMessageNotFoundException(MessageNotFoundException e) {
+        ApiError apiError = new ApiError(404, "Not Found", e.getMessage());
+        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)

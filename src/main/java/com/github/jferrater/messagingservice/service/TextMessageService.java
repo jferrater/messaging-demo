@@ -1,6 +1,8 @@
 package com.github.jferrater.messagingservice.service;
 
+import com.github.jferrater.messagingservice.exceptions.MessageNotFoundException;
 import com.github.jferrater.messagingservice.model.MessageIds;
+import com.github.jferrater.messagingservice.model.MessageStatus;
 import com.github.jferrater.messagingservice.model.TextMessage;
 import com.github.jferrater.messagingservice.model.TextMessageResponse;
 import com.github.jferrater.messagingservice.repository.TextMessageRepository;
@@ -25,6 +27,7 @@ public class TextMessageService {
 
     public TextMessageResponse createMessage(TextMessage textMessage) {
         TextMessageEntity textMessageEntity = toTextMessageEntity(textMessage);
+        textMessageEntity.setMessageStatus(MessageStatus.NEW);
         return toTextMessageResponse(textMessageRepository.insert(textMessageEntity));
     }
 
@@ -50,8 +53,18 @@ public class TextMessageService {
     }
 
     public void deleteMessages(MessageIds messageIds) {
+        checkIfMessagesExist(messageIds);
         for(String id : messageIds.getIds()) {
             textMessageRepository.deleteById(id);
+        }
+    }
+
+    private void checkIfMessagesExist(MessageIds messageIds) {
+        for(String id : messageIds.getIds()) {
+            Optional<TextMessageEntity> byId = textMessageRepository.findById(id);
+            if(byId.isEmpty()){
+                throw new MessageNotFoundException(String.format("The text message with an id '%s' is not found!", id));
+            }
         }
     }
 
