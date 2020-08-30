@@ -1,9 +1,14 @@
 package com.github.jferrater.messagingservice.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class ApiError {
 
+    @Schema(description = "The error code")
     private int code;
+    @Schema(description = "The error status")
     private String status;
+    @Schema(description = "The error message")
     private String message;
 
     public ApiError(int code, String status, String message) {

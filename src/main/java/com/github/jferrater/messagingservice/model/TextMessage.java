@@ -1,9 +1,19 @@
 package com.github.jferrater.messagingservice.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+import javax.validation.constraints.NotNull;
+
 public class TextMessage {
 
+    @Schema(description = "The username of the sender")
+    @NotNull
     private String sender;
+    @Schema(description = "The username of the receiver")
+    @NotNull
     private String receiver;
+    @Schema(description = "The content of the text message")
+    @NotNull
     private String message;
 
     public TextMessage(String sender, String receiver, String message) {

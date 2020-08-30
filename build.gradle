@@ -17,6 +17,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'
 	implementation 'org.modelmapper:modelmapper:2.3.8'
+	implementation 'org.springdoc:springdoc-openapi-ui:1.1.49'
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

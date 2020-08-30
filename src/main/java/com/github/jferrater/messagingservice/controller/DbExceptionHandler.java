@@ -1,7 +1,6 @@
 package com.github.jferrater.messagingservice.controller;
 
 import com.github.jferrater.messagingservice.model.ApiError;
-import com.mongodb.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,11 +1,20 @@
 package com.github.jferrater.messagingservice.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
+
+import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME;
 
 public class TextMessageResponse extends TextMessage{
 
+    @Schema(description = "The id of the text message")
     private String id;
+    @Schema(description = "The date the message was sent")
+    @DateTimeFormat(iso = DATE_TIME)
     private Date dateSent;
+    @Schema(description = "The status of the message")
     private MessageStatus messageStatus;
 
     public TextMessageResponse() {
