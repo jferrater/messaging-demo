@@ -53,23 +53,24 @@ public class TextMessageService {
     }
 
     public void deleteMessages(MessageIds messageIds) {
-        checkIfMessagesExist(messageIds);
+        checkIfMessagesExist(messageIds.getIds());
         for(String id : messageIds.getIds()) {
             textMessageRepository.deleteById(id);
         }
     }
 
-    private void checkIfMessagesExist(MessageIds messageIds) {
-        for(String id : messageIds.getIds()) {
+    public void deleteMessageById(String id) {
+        checkIfMessagesExist(List.of(id));
+        textMessageRepository.deleteById(id);
+    }
+
+    private void checkIfMessagesExist(List<String> ids) {
+        for(String id : ids) {
             Optional<TextMessageEntity> byId = textMessageRepository.findById(id);
             if(byId.isEmpty()){
                 throw new MessageNotFoundException(String.format("The text message with an id '%s' is not found!", id));
             }
         }
-    }
-
-    public void deleteMessageById(String id) {
-        textMessageRepository.deleteById(id);
     }
 
     private TextMessageResponse toTextMessageResponse(TextMessageEntity textMessageEntity) {

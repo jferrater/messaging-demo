@@ -129,6 +129,7 @@ class TextMessageServiceTest {
 
     @Test
     void shouldDeleteAMessage() {
+        when(textMessageRepository.findById(MESSAGE_ID)).thenReturn(Optional.of(new TextMessageEntity()));
         doNothing().when(textMessageRepository).deleteById(isA(String.class));
 
         target.deleteMessageById(MESSAGE_ID);

@@ -55,7 +55,7 @@ public class TextMessageController {
 
     @Operation(
             summary = "Get the received text messages",
-            description = "Returns the list of text messages received by the receiver regardless of the message status. Filter messages by start and stop dates.",
+            description = "Returns the list of text messages received by the receiver regardless of the message status. Filter the messages between dates if startDate and stopDate are provided as request params",
             tags = "messaging_service"
     )
     @ApiResponses(
@@ -68,8 +68,8 @@ public class TextMessageController {
     @GetMapping(value = "/messages/{username}/received", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<TextMessageResponse>> getReceivedMessages(
             @Parameter(description = "The username of the receiver") @PathVariable("username") String username,
-            @Parameter(description = "The start date (optional)") @Nullable @RequestParam(required = false) @DateTimeFormat(iso = DATE_TIME) Date startDate,
-            @Parameter(description = "The stop date (optional)") @Nullable @RequestParam(required = false) @DateTimeFormat(iso = DATE_TIME) Date stopDate) {
+            @Parameter(description = "The start date") @Nullable @RequestParam(required = false) @DateTimeFormat(iso = DATE_TIME) Date startDate,
+            @Parameter(description = "The stop date") @Nullable @RequestParam(required = false) @DateTimeFormat(iso = DATE_TIME) Date stopDate) {
         if(startDate != null && stopDate != null) {
             List<TextMessageResponse> receivedMessagesBetweenDates = textMessageService.getReceivedMessagesBetweenDates(username, startDate, stopDate);
             return new ResponseEntity<>(receivedMessagesBetweenDates, HttpStatus.OK);
@@ -81,7 +81,7 @@ public class TextMessageController {
 
     @Operation(
             summary = "Get the newly received text messages",
-            description = "Returns the list of newly received text messages.",
+            description = "Returns the list of newly received text messages. Once the new message is fetched, the message status changes from NEW to FETCHED",
             tags = "messaging_service"
     )
     @ApiResponses(
