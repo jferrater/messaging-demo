@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,8 +25,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -137,6 +137,14 @@ class TextMessageControllerTest {
 
         mockMvc.perform(delete("/messages/"+MESSAGE_ID))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldReturnNotFound() throws Exception {
+        doThrow(EmptyResultDataAccessException.class).when(textMessageService).deleteMessageById(isA(String.class));
+
+        mockMvc.perform(delete("/messages/"+MESSAGE_ID))
+                .andExpect(status().isNotFound());
     }
 
     private static String requestBody() throws JsonProcessingException {
