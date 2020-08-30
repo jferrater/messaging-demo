@@ -33,6 +33,11 @@ public class TextMessageService {
         return messagesByReceiver.stream().map(this::toTextMessageResponse).collect(toList());
     }
 
+    public List<TextMessageResponse> getReceivedMessagesBetweenDates(String receiver, Date startIndexDate, Date stopIndexDate) {
+        List<TextMessageEntity> messages = textMessageRepository.findMessagesByReceiverAndDateSentBetween(receiver, startIndexDate, stopIndexDate);
+        return messages.stream().map(this::toTextMessageResponse).collect(toList());
+    }
+
     public List<TextMessageResponse> getSentMessages(String sender) {
         List<TextMessageEntity> messagesByReceiver = textMessageRepository.findMessagesBySender(sender);
         return messagesByReceiver.stream().map(this::toTextMessageResponse).collect(toList());
@@ -67,5 +72,4 @@ public class TextMessageService {
     private TextMessageEntity toTextMessageEntity(TextMessageResponse textMessageResponse) {
         return modelMapper.map(textMessageResponse, TextMessageEntity.class);
     }
-
 }

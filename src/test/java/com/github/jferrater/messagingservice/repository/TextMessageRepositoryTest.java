@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -45,6 +48,7 @@ class TextMessageRepositoryTest {
     void shouldGetMessageById() {
         TextMessageEntity result = target.findById(MESSAGE_ID).orElse(null);
 
+        System.out.println("hahahaa "+ result.getDateSent().getTime());
         assertThat(result, is(notNullValue()));
         assertThat(result.getDateSent(), is(notNullValue()));
         assertThat(result.getId(), is(notNullValue()));
@@ -64,6 +68,30 @@ class TextMessageRepositoryTest {
     @Test
     void shouldGetSentMessages() {
         List<TextMessageEntity> result = target.findMessagesBySender(SENDER);
+
+        assertThat(result.size(), is(1));
+    }
+
+    @Test
+    void shouldGetMessagesBetweenDates() throws ParseException {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        String dateSentString1 = "2020-08-25T15:00:00.235-0700";
+        Date dateSent1 = dateFormat.parse(dateSentString1);
+        TextMessageEntity textMessageEntity1 = new TextMessageEntity(UUID.randomUUID().toString(), SENDER, RECEIVER, MESSAGE_BODY, dateSent1);
+        textMessageEntity1.setMessageStatus(MessageStatus.NEW);
+        target.save(textMessageEntity1);
+
+        String dateSentString2 = "2020-08-25T11:00:00.235-0700";
+        Date dateSent2 = dateFormat.parse(dateSentString2);
+        TextMessageEntity textMessageEntity2 = new TextMessageEntity(UUID.randomUUID().toString(), SENDER, RECEIVER, MESSAGE_BODY, dateSent2);
+        textMessageEntity2.setMessageStatus(MessageStatus.FETCHED);
+        target.save(textMessageEntity2);
+
+        String startDateString = "2020-08-25T14:00:00.235-0700";
+        String stopDateString = "2020-08-25T16:00:00.235-0700";
+        Date startIndexDate = dateFormat.parse(startDateString);
+        Date stopIndexDate = dateFormat.parse(stopDateString);
+        List<TextMessageEntity> result = target.findMessagesByReceiverAndDateSentBetween(RECEIVER, startIndexDate, stopIndexDate);
 
         assertThat(result.size(), is(1));
     }

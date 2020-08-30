@@ -63,6 +63,17 @@ class TextMessageServiceTest {
     }
 
     @Test
+    void shouldGetReceivedMessagesBetweenDates() {
+        TextMessageEntity textMessageEntity = new TextMessageEntity(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
+        textMessageEntity.setMessageStatus(MessageStatus.NEW);
+        when(textMessageRepository.findMessagesByReceiverAndDateSentBetween(anyString(), any(Date.class), any(Date.class))).thenReturn(List.of(textMessageEntity));
+
+        List<TextMessageResponse> result = target.getReceivedMessagesBetweenDates(RECEIVER, new Date(), new Date());
+
+        assertThat(result.size(), is(1));
+    }
+
+    @Test
     void shouldUpdateMessage() {
         TextMessageEntity textMessageEntity = new TextMessageEntity(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
         textMessageEntity.setMessageStatus(MessageStatus.FETCHED);

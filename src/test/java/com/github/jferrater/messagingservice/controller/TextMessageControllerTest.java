@@ -23,8 +23,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -79,6 +78,17 @@ class TextMessageControllerTest {
     }
 
     @Test
+    void shouldGetReceivedMessagesBetweenDates() throws Exception {
+        TextMessageResponse textMessageResponse = new TextMessageResponse(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
+        when(textMessageService.getReceivedMessagesBetweenDates(anyString(), any(Date.class), any(Date.class))).thenReturn(List.of(textMessageResponse));
+
+        mockMvc.perform(get("/messages/"+RECEIVER+"/received?&startDate=2020-08-29T15:00:10.929Z&stopDate=2020-08-29T17:30:15.622Z")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+    }
+
+    @Test
     void shouldOnlyGetNewMessages() throws Exception {
         TextMessageResponse textMessageResponse1 = new TextMessageResponse(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
         textMessageResponse1.setMessageStatus(MessageStatus.NEW);
@@ -86,14 +96,14 @@ class TextMessageControllerTest {
         textMessageResponse2.setMessageStatus(MessageStatus.FETCHED);
         when(textMessageService.getReceivedMessages(RECEIVER)).thenReturn(List.of(textMessageResponse1, textMessageResponse2));
 
-        mockMvc.perform(get("/messages/"+RECEIVER+"/received?only_new_messages=true")
+        mockMvc.perform(get("/messages/"+RECEIVER+"/new")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
     }
 
     @Test
-    void shouldOnlyGetSentMessages() throws Exception {
+    void shouldGetSentMessages() throws Exception {
         TextMessageResponse textMessageResponse1 = new TextMessageResponse(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());
         textMessageResponse1.setMessageStatus(MessageStatus.NEW);
         TextMessageResponse textMessageResponse2 = new TextMessageResponse(MESSAGE_ID, SENDER, RECEIVER, MESSAGE_BODY, new Date());

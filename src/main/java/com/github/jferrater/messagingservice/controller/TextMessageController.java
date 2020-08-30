@@ -6,15 +6,18 @@ import com.github.jferrater.messagingservice.model.TextMessage;
 import com.github.jferrater.messagingservice.model.TextMessageResponse;
 import com.github.jferrater.messagingservice.service.TextMessageService;
 import com.mongodb.lang.Nullable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME;
 
 @RestController
 public class TextMessageController {
@@ -34,21 +37,30 @@ public class TextMessageController {
     @GetMapping(value = "/messages/{username}/received", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<TextMessageResponse>> getReceivedMessages(
             @PathVariable("username") String username,
-            @Nullable @RequestParam boolean only_new_messages) {
-        List<TextMessageResponse> messages = textMessageService.getReceivedMessages(username);
-        if (only_new_messages) {
-            List<TextMessageResponse> newMessages = messages.stream()
-                    .filter(message -> MessageStatus.NEW.equals(message.getMessageStatus()))
-                    .collect(toList());
-            List<TextMessageResponse> toBeUpdatedList = new ArrayList<>(newMessages);
-            toBeUpdatedList.forEach(m -> {
-                m.setMessageStatus(MessageStatus.FETCHED);
-                textMessageService.updateMessage(m);
-            });
-            return new ResponseEntity<>(newMessages, HttpStatus.OK);
+            @Nullable @RequestParam @DateTimeFormat(iso = DATE_TIME) Date startDate,
+            @Nullable @RequestParam @DateTimeFormat(iso = DATE_TIME) Date stopDate) {
+        if(startDate != null && stopDate != null) {
+            List<TextMessageResponse> receivedMessagesBetweenDates = textMessageService.getReceivedMessagesBetweenDates(username, startDate, stopDate);
+            return new ResponseEntity<>(receivedMessagesBetweenDates, HttpStatus.OK);
         } else {
+            List<TextMessageResponse> messages = textMessageService.getReceivedMessages(username);
             return new ResponseEntity<>(messages, HttpStatus.OK);
         }
+    }
+
+    @GetMapping(value = "/messages/{username}/new", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<TextMessageResponse>> getNewMessages(
+            @PathVariable("username") String username) {
+        List<TextMessageResponse> messages = textMessageService.getReceivedMessages(username);
+        List<TextMessageResponse> newMessages = messages.stream()
+                .filter(message -> MessageStatus.NEW.equals(message.getMessageStatus()))
+                .collect(toList());
+        List<TextMessageResponse> toBeUpdatedList = new ArrayList<>(newMessages);
+        toBeUpdatedList.forEach(m -> {
+            m.setMessageStatus(MessageStatus.FETCHED);
+            textMessageService.updateMessage(m);
+        });
+        return new ResponseEntity<>(newMessages, HttpStatus.OK);
     }
 
     @GetMapping(value = "/messages/{username}/sent", produces = MediaType.APPLICATION_JSON_VALUE)
